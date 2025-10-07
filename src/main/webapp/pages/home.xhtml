@@ -5,7 +5,10 @@
 <h:body>
     <h2>Bienvenue, #{authBean.etudiantConnecte.nom} #{authBean.etudiantConnecte.prenom} !</h2>
     <h:form>
-        <h:commandButton value="Se déconnecter" action="#{authBean.logout}" />
+        <h:form>
+            <h:commandButton value="Tchater avec un étudiant" action="select_chat.xhtml?faces-redirect=true" />
+            <h:commandButton value="Se déconnecter" action="#{authBean.logout}" />
+        </h:form>
     </h:form>
 </h:body>
 </html>

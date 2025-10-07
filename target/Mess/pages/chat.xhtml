@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">  <!-- ✅ Add this line -->
+
+<h:head>
+    <title>Tchat privé</title>
+    <style>
+        #messages {
+            border: 1px solid #ccc;
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .mine { text-align: right; color: blue; }
+        .other { text-align: left; color: green; }
+    </style>
+</h:head>
+<h:body>
+    <h2>Tchat avec #{chatBean.destinataire.prenom} #{chatBean.destinataire.nom}</h2>
+
+    <div id="messages">
+        <ui:repeat value="#{chatBean.historique}" var="msg">
+            <div class="#{msg.expediteur.email eq authBean.etudiantConnecte.email ? 'mine' : 'other'}">
+                <b>#{msg.expediteur.prenom}:</b> #{msg.contenu}
+            </div>
+        </ui:repeat>
+    </div>
+
+    <h:form id="formMessage">
+        <h:inputText value="#{chatBean.nouveauMessage}" style="width:80%" />
+        <h:commandButton value="Envoyer" action="#{chatBean.envoyerMessage}">
+            <f:ajax execute="@form" render=":formMessage :messages" />
+        </h:commandButton>
+    </h:form>
+
+    <script>
+        let ws = new WebSocket("ws://" + window.location.host + "/chat-multiuser-jsf/chat/#{authBean.etudiantConnecte.email}");
+
+        ws.onmessage = function(event) {
+            let div = document.getElementById("messages");
+            let msg = document.createElement("div");
+            msg.textContent = event.data;
+            div.appendChild(msg);
+            div.scrollTop = div.scrollHeight;
+        };
+    </script>
+</h:body>
+</html>
