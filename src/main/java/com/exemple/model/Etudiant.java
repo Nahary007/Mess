@@ -1,6 +1,9 @@
 package com.exemple.model;
 
+
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "etudiant")
@@ -21,6 +24,9 @@ public class Etudiant {
 
     @Column(name = "password_hash", nullable = false, length = 100)  // le mot de passe est souvent long
     private String motDePasse;
+
+    @ManyToMany(mappedBy = "membres")
+    private List<Conversation> conversations;
 
     // Getters et Setters
     public Long getId() { return id; }

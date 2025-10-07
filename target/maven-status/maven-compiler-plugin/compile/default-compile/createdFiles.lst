@@ -1,5 +1,10 @@
-com\exemple\service\EtudiantService.class
+com\exemple\model\Conversation.class
+com\exemple\service\ChatService.class
 com\exemple\controller\EtudiantController.class
-com\exemple\model\Etudiant.class
 com\exemple\controller\AuthController.class
 com\exemple\controller\HelloController.class
+com\exemple\controller\ChatController.class
+com\exemple\service\EtudiantService.class
+com\exemple\model\Message.class
+com\exemple\websocket\ChatEndpoint.class
+com\exemple\model\Etudiant.class
