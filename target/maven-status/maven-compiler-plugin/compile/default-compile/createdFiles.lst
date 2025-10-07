@@ -1,4 +1,5 @@
 com\exemple\service\EtudiantService.class
 com\exemple\controller\EtudiantController.class
 com\exemple\model\Etudiant.class
+com\exemple\controller\AuthController.class
 com\exemple\controller\HelloController.class
