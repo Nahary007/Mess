@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+<h:head>
+    <title>Inscription étudiante</title>
+</h:head>
+<h:body>
+    <h2>Formulaire d'inscription</h2>
+
+    <h:form>
+        <h:panelGrid columns="2" cellpadding="5">
+            <h:outputLabel for="nom" value="Nom :" />
+            <h:inputText id="nom" value="#{etudiantBean.etudiant.nom}" required="true" />
+
+            <h:outputLabel for="prenom" value="Prénom :" />
+            <h:inputText id="prenom" value="#{etudiantBean.etudiant.prenom}" required="true" />
+
+            <h:outputLabel for="email" value="Email :" />
+            <h:inputText id="email" value="#{etudiantBean.etudiant.email}" required="true" />
+
+            <h:outputLabel for="motDePasse" value="Mot de passe :" />
+            <h:inputSecret id="motDePasse" value="#{etudiantBean.etudiant.motDePasse}" required="true" />
+        </h:panelGrid>
+
+        <br/>
+        <h:commandButton value="S'inscrire" action="#{etudiantBean.inscrire}" />
+    </h:form>
+</h:body>
+</html>
