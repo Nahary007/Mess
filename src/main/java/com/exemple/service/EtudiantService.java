@@ -14,4 +14,15 @@ public class EtudiantService {
     public void inscrire(Etudiant etudiant) {
         em.persist(etudiant);
     }
+
+    public Etudiant connecter(String email, String motDePasse) {
+        try{
+            return em.createQuery("SELECT e FROM Etudiant e WHERE e.email = :email AND e.motDePasse = :mdp", Etudiant.class)
+                    .setParameter("email", email)
+                    .setParameter("mdp", motDePasse)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
