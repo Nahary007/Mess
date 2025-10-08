@@ -1,10 +1,12 @@
 D:\ESTI-L2\Java\Examen\Mess\src\main\java\com\exemple\model\Message.java
 D:\ESTI-L2\Java\Examen\Mess\src\main\java\com\exemple\controller\AuthController.java
+D:\ESTI-L2\Java\Examen\Mess\src\main\java\com\exemple\model\Invitation.java
 D:\ESTI-L2\Java\Examen\Mess\src\main\java\com\exemple\websocket\ChatEndpoint.java
 D:\ESTI-L2\Java\Examen\Mess\src\main\java\com\exemple\controller\HelloController.java
 D:\ESTI-L2\Java\Examen\Mess\src\main\java\com\exemple\service\ChatService.java
 D:\ESTI-L2\Java\Examen\Mess\src\main\java\com\exemple\controller\EtudiantController.java
 D:\ESTI-L2\Java\Examen\Mess\src\main\java\com\exemple\model\Etudiant.java
+D:\ESTI-L2\Java\Examen\Mess\src\main\java\com\exemple\controller\GroupController.java
 D:\ESTI-L2\Java\Examen\Mess\src\main\java\com\exemple\controller\ChatController.java
 D:\ESTI-L2\Java\Examen\Mess\src\main\java\com\exemple\model\Conversation.java
 D:\ESTI-L2\Java\Examen\Mess\src\main\java\com\exemple\service\EtudiantService.java

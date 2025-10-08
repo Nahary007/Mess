@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Groupes de discussion</title>
+</h:head>
+<h:body>
+    <h2>Créer un nouveau groupe</h2>
+    <h:form>
+        <h:inputText value="#{groupeBean.nomGroupe}" placeholder="Nom du groupe"/>
+        <h:commandButton value="Créer" action="#{groupeBean.creerGroupe}" />
+    </h:form>
+
+    <h2>Mes groupes</h2>
+    <h:dataTable value="#{groupeBean.groupes}" var="g">
+        <h:column><f:facet name="header">Nom</f:facet>#{g.nom}</h:column>
+    </h:dataTable>
+
+    <h2>Invitations reçues</h2>
+    <h:dataTable value="#{groupeBean.invitationsRecues}" var="inv">
+        <h:column>De : #{inv.expediteur.nom}</h:column>
+        <h:column>Groupe : #{inv.conversation.nom}</h:column>
+        <h:column>
+            <h:form>
+                <h:commandButton value="Accepter" action="#{groupeBean.accepterInvitation(inv.id)}" />
+                <h:commandButton value="Refuser" action="#{groupeBean.refuserInvitation(inv.id)}" />
+            </h:form>
+        </h:column>
+    </h:dataTable>
+
+</h:body>
+</html>
