@@ -21,6 +21,7 @@ public class EtudiantController {
 
     public String inscrire() {
         etudiantService.inscrire(etudiant);
-        return "success.xhtml?faces-redirect=true";
+        return "/index?faces-redirect=true"; // <- chemin absolu depuis la racine du webapp
     }
+
 }

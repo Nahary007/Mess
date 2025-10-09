@@ -1,11 +1,51 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html">
-
 <h:head>
-    <title>Hello</title>
+    <title>Mess - Connexion</title>
+    <link rel="stylesheet" type="text/css" href="ressources/css/style.css" />
 </h:head>
 <h:body>
-    <h2>#{helloBean}</h2>
+    <main class="page">
+        <section class="card small">
+            <header class="card-header">
+                <h1 class="brand">Mess</h1>
+            </header>
+
+            <h:form>
+                <!-- Messages globaux d'erreur ou de validation -->
+                <h:messages globalOnly="true" layout="table" styleClass="error-messages" />
+
+                <!-- Champ Email -->
+                <div class="field full">
+                    <label for="email">Adresse e-mail</label>
+                    <h:inputText id="email" value="#{authBean.email}" required="true"
+                                 type="email" styleClass="input"
+                                 placeholder="Entrez votre e-mail"/>
+                </div>
+
+                <!-- Champ Mot de passe -->
+                <div class="field full">
+                    <label for="motDePasse">Mot de passe</label>
+                    <h:inputSecret id="motDePasse" value="#{authBean.motDePasse}" required="true"
+                                   styleClass="input" placeholder="Entrez votre mot de passe"/>
+                </div>
+
+                <!-- Bouton de connexion -->
+                <div class="actions full">
+                    <h:commandButton value="Se connecter"
+                                     action="#{authBean.login}"
+                                     styleClass="btn-primary full" />
+                </div>
+
+                <!-- Lien vers la page d'inscription -->
+                <p class="muted center">
+                    Vous n'avez pas encore de compte ?
+                    <h:link outcome="/pages/inscription">Créer un compte</h:link>
+
+                </p>
+            </h:form>
+        </section>
+    </main>
 </h:body>
 </html>

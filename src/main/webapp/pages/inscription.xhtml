@@ -3,28 +3,63 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html">
 
 <h:head>
-    <title>Inscription étudiante</title>
+    <title>Mess - Inscription</title>
+    <link rel="stylesheet" type="text/css" href="../ressources/css/style.css" />
 </h:head>
+
 <h:body>
-    <h2>Formulaire d'inscription</h2>
+    <main class="page">
+        <section class="card small">
+            <header class="card-header">
+                <h1 class="brand">Mess</h1>
+            </header>
 
-    <h:form>
-        <h:panelGrid columns="2" cellpadding="5">
-            <h:outputLabel for="nom" value="Nom :" />
-            <h:inputText id="nom" value="#{etudiantBean.etudiant.nom}" required="true" />
+            <h:form>
+                <!-- Messages globaux d'erreur ou de validation -->
+                <h:messages globalOnly="true" layout="table" styleClass="error-messages" />
 
-            <h:outputLabel for="prenom" value="Prénom :" />
-            <h:inputText id="prenom" value="#{etudiantBean.etudiant.prenom}" required="true" />
+                <!-- Champ Nom -->
+                <div class="field full">
+                    <label for="nom">Nom</label>
+                    <h:inputText id="nom" value="#{etudiantBean.etudiant.nom}" required="true"
+                                 styleClass="input" placeholder="Entrez votre nom" />
+                </div>
 
-            <h:outputLabel for="email" value="Email :" />
-            <h:inputText id="email" value="#{etudiantBean.etudiant.email}" required="true" />
+                <!-- Champ Prénom -->
+                <div class="field full">
+                    <label for="prenom">Prénom</label>
+                    <h:inputText id="prenom" value="#{etudiantBean.etudiant.prenom}" required="true"
+                                 styleClass="input" placeholder="Entrez votre prénom" />
+                </div>
 
-            <h:outputLabel for="motDePasse" value="Mot de passe :" />
-            <h:inputSecret id="motDePasse" value="#{etudiantBean.etudiant.motDePasse}" required="true" />
-        </h:panelGrid>
+                <!-- Champ Email -->
+                <div class="field full">
+                    <label for="email">Adresse e-mail</label>
+                    <h:inputText id="email" value="#{etudiantBean.etudiant.email}" required="true"
+                                 type="email" styleClass="input" placeholder="Entrez votre e-mail" />
+                </div>
 
-        <br/>
-        <h:commandButton value="S'inscrire" action="#{etudiantBean.inscrire}" />
-    </h:form>
+                <!-- Champ Mot de passe -->
+                <div class="field full">
+                    <label for="motDePasse">Mot de passe</label>
+                    <h:inputSecret id="motDePasse" value="#{etudiantBean.etudiant.motDePasse}" required="true"
+                                   styleClass="input" placeholder="Entrez votre mot de passe" />
+                </div>
+
+                <!-- Bouton d'inscription -->
+                <div class="actions full">
+                    <h:commandButton value="S'inscrire"
+                                     action="#{etudiantBean.inscrire}"
+                                     styleClass="btn-primary full" />
+                </div>
+
+                <!-- Lien vers la page de connexion -->
+                <p class="muted center">
+                    Vous avez déjà un compte ?
+                    <h:link outcome="/index">Se connecter</h:link>
+                </p>
+            </h:form>
+        </section>
+    </main>
 </h:body>
 </html>
