@@ -47,7 +47,7 @@ public class AuthController implements Serializable {
 
         if(e != null) {
             etudiantConnecte = e;
-            return "home.xhtml?faces-redirect=true";
+            return "/pages/home.xhtml?faces-redirect=true";
         } else {
             FacesMessage msg = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
@@ -64,7 +64,7 @@ public class AuthController implements Serializable {
         FacesContext.getCurrentInstance()
                 .getExternalContext()
                 .invalidateSession();
-        return "login.xhtml?faces-redirect=true";
+        return "/index?faces-redirect=true";
     }
 
     public boolean isConnecte() {
