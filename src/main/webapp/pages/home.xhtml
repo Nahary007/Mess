@@ -1,15 +1,121 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+        >
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr"
       xmlns:h="http://xmlns.jcp.org/jsf/html">
-<h:head><title>Accueil</title></h:head>
-<h:body>
-    <h2>Bienvenue, #{authBean.etudiantConnecte.nom} #{authBean.etudiantConnecte.prenom} !</h2>
-    <h:form>
-        <h:form>
-            <h:commandButton value="Tchater avec un étudiant" action="select_chat.xhtml?faces-redirect=true" />
-            <h:commandButton value="Mes groupes" action="groupes.xhtml?faces-redirect=true" />
-            <h:commandButton value="Se déconnecter" action="#{authBean.logout}" />
-        </h:form>
-    </h:form>
-</h:body>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Messagerie</title>
+    <link rel="stylesheet" href="../ressources/css/chat.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+<div class="app-container">
+
+    <!-- ===== SIDEBAR GAUCHE ===== -->
+    <aside class="sidebar left">
+        <div class="search-section">
+            <div class="search-wrapper">
+                <img src="../ressources/assets/logo.png" alt="Logo" class="logo-site" />
+
+                <div class="input-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Rechercher..." />
+
+                    <div class="dropdown">
+                        <ul>
+                            <li>Historique 1</li>
+                            <li>Historique 2</li>
+                            <li>Historique 3</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="contacts">
+            <!-- Liste de contacts -->
+            <div class="contact">
+                <img src="" alt="avatar" />
+                <div class="contact-info">
+                    <p class="name">Jean Dupont</p>
+                    <p class="last-msg">Salut, ça va ?</p>
+                </div>
+            </div>
+            <div class="contact">
+                <img src="" alt="avatar" />
+                <div class="contact-info">
+                    <p class="name">Alice</p>
+                    <p class="last-msg">On se voit demain ?</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="logout-section">
+            <h:form>
+                <h:commandButton value="Déconnexion" action="#{authBean.logout}" styleClass="logout-btn" />
+            </h:form>
+        </div>
+
+    </aside>
+
+    <!-- ===== ZONE CENTRALE ===== -->
+    <main class="chat">
+        <div class="chat-header hidden" id="chatHeader">
+            <img src="" alt="avatar" />
+            <span id="chatName">Nom du contact</span>
+        </div>
+
+        <div class="chat-body" id="chatBody">
+            <p class="empty">Sélectionnez un contact pour démarrer une conversation</p>
+        </div>
+
+        <div class="chat-footer hidden" id="chatFooter">
+            <button class="add-btn" type="button">+</button>
+            <input type="text" id="messageInput" placeholder="Écrire un message..." />
+            <button class="send-btn" type="button">&#128233;</button>
+        </div>
+    </main>
+
+    <!-- ===== SIDEBAR DROITE ===== -->
+    <aside class="sidebar right">
+        <div class="search-section">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher..." />
+                <div class="dropdown">
+                    <ul>
+                        <li>Historique 1</li>
+                        <li>Historique 2</li>
+                        <li>Historique 3</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="groups">
+            <div class="group">
+                <p class="group-name">Groupe Dév Web</p>
+            </div>
+            <div class="group">
+                <p class="group-name">Famille &#128106;</p>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<!-- ===== POPUP CREATION GROUPE ===== -->
+<div class="popup-overlay hidden" id="groupPopup">
+    <div class="popup">
+        <h2>Créer un groupe</h2>
+        <input type="text" placeholder="Nom du groupe" id="groupName" />
+        <button id="createGroup" type="button">Créer</button>
+        <button id="closePopup" type="button">Annuler</button>
+    </div>
+</div>
+
+<script type="text/javascript" src="../ressources/js/script.js"></script>
+</body>
 </html>
