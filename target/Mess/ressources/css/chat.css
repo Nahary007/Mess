@@ -1,0 +1,325 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+/* ==== SIDEBAR ==== */
+.sidebar {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  background: #f4f4f4;
+  border-right: 1px solid #ccc;
+  overflow-y: auto;
+}
+
+.sidebar.right {
+  border-left: 1px solid #ccc;
+  border-right: none;
+}
+
+/* Masquer scrollbar visuelle */
+.sidebar::-webkit-scrollbar {
+  width: 0;
+}
+
+/* ==== BARRE DE RECHERCHE ==== */
+.search-section {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.logo-site {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.input-container {
+  position: relative;
+  flex-grow: 1; /* Pour que le champ prenne toute la place dispo */
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 10px 10px 35px; /* espace à gauche pour l'icône */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%; /* Positionné juste sous la barre de recherche */
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  display: none;
+  z-index: 10;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dropdown li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.dropdown li:hover {
+  background-color: #f0f0f0;
+}
+
+
+.input-container {
+  position: relative;
+  flex-grow: 1;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 10px 10px 35px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.back-icon {
+  font-size: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+  color: #555;
+  transition: opacity 0.3s ease;
+}
+
+
+
+
+/* ==== CONTACTS ==== */
+.contacts {
+  padding: 10px;
+}
+
+.contact {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.contact:hover {
+  background: #e5e5e5;
+}
+
+.contact img {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.contact-info .name {
+  font-weight: bold;
+}
+
+.contact-info .last-msg {
+  font-size: 0.9em;
+  color: gray;
+}
+
+/* ==== CHAT ==== */
+.chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.chat-header img {
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.chat-body {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.chat-body::-webkit-scrollbar {
+  width: 0;
+}
+
+.empty {
+  text-align: center;
+  color: gray;
+  margin-top: 325px;
+}
+
+/* Messages */
+.message {
+  max-width: 70%;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 10px;
+  word-wrap: break-word;
+}
+
+.sent {
+  background: #daf8cb;
+  align-self: flex-end;
+}
+
+.received {
+  background: #e8e8e8;
+  align-self: flex-start;
+}
+
+/* ==== FOOTER ==== */
+.chat-footer {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.chat-footer input {
+  flex: 1;
+  padding: 8px;
+  margin: 0 10px;
+  border: 1px solid #bbb;
+  border-radius: 20px;
+}
+
+.add-btn,
+.send-btn {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+/* ==== SIDEBAR DROITE ==== */
+.round-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  font-size: 1.5em;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.groups {
+  padding: 10px;
+}
+
+.group {
+  padding: 10px;
+  border-radius: 8px;
+  background: #f7f7f7;
+  margin-bottom: 5px;
+}
+
+/* ==== POPUP ==== */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+.logout-section {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+
+
+.logout-btn {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.logout-btn:hover {
+    background-color: #c0392b;
+}
+.sidebar.left {
+    position: relative; /* ← nécessaire pour que logout-section reste en bas */
+}
