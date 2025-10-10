@@ -26,7 +26,7 @@ public class Conversation {
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL)
     private List<Message> messages;
 
-    // Constructeurs
+    // Constructeurs (inchangés)
     public Conversation() {
     }
 
@@ -36,7 +36,17 @@ public class Conversation {
         this.date_creation = date_creation;
     }
 
-    // Getters et Setters
+    // MODIF: Ajout de getLastMsg() pour le dernier message (texte court)
+    public String getLastMsg() {
+        if (messages == null || messages.isEmpty()) {
+            return "Conversation vide";
+        }
+        Message last = messages.get(messages.size() - 1);
+        String text = last.getContenu();  // Assumant que Message a getContenu()
+        return text.length() > 50 ? text.substring(0, 50) + "..." : text;
+    }
+
+    // Getters et Setters (inchangés)
     public Long getId() {
         return id;
     }
