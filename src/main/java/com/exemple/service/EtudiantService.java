@@ -5,6 +5,8 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
+import java.util.List;
+
 @Stateless
 public class EtudiantService {
 
@@ -36,4 +38,11 @@ public class EtudiantService {
             return null;
         }
     }
+
+    public List<Etudiant> searchByNomOuEmail(String terme) {
+        return em.createQuery("SELECT e FROM Etudiant e WHERE LOWER(e.nom) LIKE :terme OR LOWER(e.email) LIKE :terme", Etudiant.class)
+                .setParameter("terme", "%" + terme.toLowerCase() + "%")
+                .getResultList();
+    }
+
 }

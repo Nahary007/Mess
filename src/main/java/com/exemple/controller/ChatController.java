@@ -12,6 +12,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Named("chatBean")
@@ -72,4 +73,30 @@ public class ChatController implements Serializable {
     public void setNouveauMessage(String nouveauMessage) {this.nouveauMessage = nouveauMessage;}
 
     public Etudiant getDestinataire() { return destinataire; }
+
+    private String query;
+    private List<Etudiant> resultatsRecherche = new ArrayList<>();
+
+    public void searchEtudiants() {
+        if (query != null && !query.trim().isEmpty()) {
+            resultatsRecherche = etudiantService.searchByNomOuEmail(query);
+        } else {
+            resultatsRecherche.clear();
+        }
+    }
+
+    public String ouvrirConversationAvec(String email) {
+        this.emailDestinataire = email;
+        return ouvrirConversation(); // Utilise ta méthode existante
+    }
+
+    // Getters & setters
+    public String getQuery() { return query; }
+    public void setQuery(String query) { this.query = query; }
+
+    public List<Etudiant> getResultatsRecherche() { return resultatsRecherche; }
+    public void setResultatsRecherche(List<Etudiant> resultatsRecherche) {
+        this.resultatsRecherche = resultatsRecherche;
+    }
+
 }
