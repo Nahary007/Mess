@@ -52,4 +52,17 @@ public class ChatService {
         Message msg = new Message(contenu, conversation, expediteur);
         em.persist(msg);
     }
+
+    public List<Conversation> getUserConversations(Etudiant user) {
+        return em.createQuery("""
+            SELECT DISTINCT c FROM Conversation c
+            LEFT JOIN c.messages msg
+            JOIN c.membres m
+            WHERE m = :user
+            GROUP BY c
+            ORDER BY MAX(msg.date_envoi) DESC, c.date_creation DESC
+            """, Conversation.class)
+                .setParameter("user", user)
+                .getResultList();
+    }
 }

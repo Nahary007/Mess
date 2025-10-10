@@ -2,6 +2,7 @@ com\exemple\model\Conversation.class
 com\exemple\service\ChatService.class
 com\exemple\controller\AuthController.class
 com\exemple\controller\HelloController.class
+com\exemple\controller\ChatController$ContactSummary.class
 com\exemple\service\EtudiantService.class
 com\exemple\model\Etudiant.class
 com\exemple\model\Invitation.class

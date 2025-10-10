@@ -1,74 +1,53 @@
-// Sélection d'éléments
-const contacts = document.querySelectorAll('.contact');
-const chatHeader = document.getElementById('chatHeader');
-const chatBody = document.getElementById('chatBody');
-const chatFooter = document.getElementById('chatFooter');
-const chatName = document.getElementById('chatName');
-const msgInput = document.getElementById('messageInput');
-const sendBtn = document.querySelector('.send-btn');
+// Sélection d'éléments (supprimé contacts et sendBtn, car géré par JSF AJAX)
 
-
-// === POPUP CREATION GROUPE ===
+// === POPUP CREATION GROUPE === (inchangé)
 const addGroupBtn = document.getElementById('addGroupBtn');
 const popup = document.getElementById('groupPopup');
 const closePopup = document.getElementById('closePopup');
 const createGroup = document.getElementById('createGroup');
 const groupsContainer = document.querySelector('.groups');
 
-// Clic sur un contact
-contacts.forEach(contact => {
-  contact.addEventListener('click', () => {
-    const name = contact.querySelector('.name').textContent;
-    const avatar = contact.querySelector('img').src;
-
-    chatHeader.classList.remove('hidden');
-    chatFooter.classList.remove('hidden');
-    chatBody.innerHTML = ''; // Effacer les anciens messages
-    chatName.textContent = name;
+// Création de groupe (inchangé)
+if (createGroup) {
+  createGroup.addEventListener('click', () => {
+    const name = document.getElementById('groupName').value.trim();
+    if (!name) return;
+    const div = document.createElement('div');
+    div.classList.add('group');
+    div.innerHTML = `<p class="group-name">${name}</p>`;
+    groupsContainer.appendChild(div);
+    popup.classList.add('hidden');
+    document.getElementById('groupName').value = '';
   });
-});
+}
 
-// Envoi message
-sendBtn.addEventListener('click', () => {
-  const text = msgInput.value.trim();
-  if (!text) return;
-
-  const msg = document.createElement('div');
-  msg.classList.add('message', 'sent');
-  msg.textContent = text;
-  chatBody.appendChild(msg);
-  msgInput.value = '';
-  chatBody.scrollTop = chatBody.scrollHeight;
-});
-
-
-createGroup.addEventListener('click', () => {
-  const name = document.getElementById('groupName').value.trim();
-  if (!name) return;
-  const div = document.createElement('div');
-  div.classList.add('group');
-  div.innerHTML = `<p class="group-name">${name}</p>`;
-  groupsContainer.appendChild(div);
-  popup.classList.add('hidden');
-  document.getElementById('groupName').value = '';
-});
-
+// Changement : Gestion du dropdown UNIQUEMENT pour la sidebar droite (inchangé)
 document.addEventListener('DOMContentLoaded', () => {
-  const searchInputs = document.querySelectorAll('.search-input');
+  const rightSearchInput = document.querySelector('.sidebar.right .search-input');
 
-  searchInputs.forEach(input => {
-    const dropdown = input.parentElement.querySelector('.dropdown');
+  if (rightSearchInput) {
+    const dropdown = rightSearchInput.parentElement.querySelector('.dropdown');
 
     if (dropdown) {
-      input.addEventListener('focus', () => {
+      rightSearchInput.addEventListener('focus', () => {
         dropdown.style.display = 'block';
       });
 
-      input.addEventListener('blur', () => {
+      rightSearchInput.addEventListener('blur', () => {
         setTimeout(() => {
           dropdown.style.display = 'none';
-        }, 150); // délai pour permettre un clic sur une option
+        }, 150);
       });
     }
-  });
+  }
+
+  // Changement : Fonction pour scroller auto après AJAX (appelée via onevent)
+  window.scrollToBottom = function(event) {
+    if (event.status === 'success') {
+      const chatBody = document.getElementById('chatBody');
+      if (chatBody) {
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+    }
+  };
 });
