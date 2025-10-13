@@ -42,4 +42,8 @@ public class Message {
         this.expediteur = expediteur;
     }
 
+    public LocalDateTime getDate_envoi() {
+        return date_envoi;
+    }
+
 }

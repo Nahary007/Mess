@@ -52,15 +52,16 @@
                 </div>
             </div>
 
-            <!-- Changement : Liste dynamique des contacts via ui:repeat -->
-            <!-- Dans <aside class="sidebar left">, remplacez la div contacts par : -->
+            <!-- Changement : Liste dynamique des contacts via ui:repeat --><h:form id="contactsForm">
             <div class="contacts">
-                <!-- MODIF: ui:repeat sur summaries avec var="summary" -->
                 <ui:repeat value="#{chatBean.conversationSummaries}" var="summary">
                     <h:commandLink styleClass="contact" style="text-decoration: none; display: block;">
                         <f:setPropertyActionListener target="#{chatBean.emailDestinataire}" value="#{summary.otherEmail}" />
-                        <f:ajax event="action" listener="#{chatBean.ouvrirConversation}" render="chatHeader chatBody chatFooter" execute="@this" />
-<!--                        <img src="" alt="avatar" />-->
+                        <f:ajax event="action"
+                                listener="#{chatBean.ouvrirConversation}"
+                                render="chatHeader chatBody chatFooter"
+                                execute="@this"
+                        />
                         <div class="contact-info">
                             <p class="name">#{summary.otherNom}</p>
                             <p class="last-msg">#{summary.lastMsg}</p>
@@ -68,6 +69,7 @@
                     </h:commandLink>
                 </ui:repeat>
             </div>
+        </h:form>
 
             <div class="logout-section">
                 <h:form>
@@ -81,7 +83,6 @@
         <main class="chat" id="chatMain">  <!-- Ajout id pour naming container -->
             <!-- Changement : rendered conditionnel + contenu dynamique -->
             <div class="chat-header" id="chatHeader" rendered="#{chatBean.conversation != null}">
-<!--                <h:graphicImage value="#{chatBean.destinataire.avatar}" alt="avatar" styleClass="avatar-header" />-->
                 <h:outputText value="#{chatBean.destinataire.nom}" id="chatName" />
             </div>
 
@@ -90,7 +91,8 @@
                 <ui:repeat value="#{chatBean.historique}" var="msg" rendered="#{chatBean.conversation != null}">
                     <div class="message #{msg.expediteur.email eq authController.etudiantConnecte.email ? 'sent' : 'received'}">
                         <span>#{msg.contenu}</span>
-                        <small style="display: block; font-size: 0.8em; color: gray;">#{msg.timestamp}</small>  <!-- Assumant un champ timestamp -->
+                        <small style="display: block; font-size: 0.8em; color: gray;">#{msg.date_envoi}
+                        </small>  <!-- Assumant un champ timestamp -->
                     </div>
                 </ui:repeat>
                 <p class="empty" rendered="#{chatBean.conversation == null}">Sélectionnez un contact pour démarrer une conversation</p>
