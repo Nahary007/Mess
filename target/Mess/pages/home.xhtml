@@ -1,153 +1,112 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
-        >
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xml:lang="fr" lang="fr">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
 <h:head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Messagerie</title>
+    <title>Mess - Chat</title>
     <link rel="stylesheet" href="../ressources/css/chat.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </h:head>
 
 <h:body>
-    <div class="app-container">
+    <div class="chat-container">
 
-        <!-- ===== SIDEBAR GAUCHE ===== -->
-        <aside class="sidebar left">
-            <div class="search-section">
-                <div class="search-wrapper">
-                    <img src="../ressources/assets/logo.png" alt="Logo" class="logo-site" />
+        <!-- ✅ Liste des contacts -->
+        <div class="sidebar">
+            <h2>Conversations</h2>
 
-                    <h:form id="searchForm">
-                        <div class="input-container">
-                            <i class="fas fa-search search-icon"></i>
-
-                            <h:inputText value="#{chatBean.query}" id="searchInput" styleClass="search-input">
-                                <f:ajax event="keyup" render="searchDropdown" listener="#{chatBean.searchEtudiants}" execute="searchInput" />
-                            </h:inputText>
-
-                            <h:panelGroup id="searchDropdown" layout="block" styleClass="dropdown">
-                                <ul>
-                                    <ui:repeat value="#{chatBean.resultatsRecherche}" var="etudiant">
-                                        <li>
-                                            <!-- Changement : Utilise f:setPropertyActionListener + f:ajax pour AJAX sans navigation -->
-                                            <h:commandLink value="#{etudiant.nom} (#{etudiant.email})" style="display: block; text-decoration: none;">
-                                                <f:setPropertyActionListener target="#{chatBean.emailDestinataire}" value="#{etudiant.email}" />
-                                                <f:ajax event="action" listener="#{chatBean.ouvrirConversation}" render="chatHeader chatBody chatFooter" execute="@this" />
-                                            </h:commandLink>
-                                        </li>
-                                    </ui:repeat>
-                                </ul>
-                            </h:panelGroup>
-                        </div>
-                    </h:form>
-
-                </div>
-            </div>
-
-            <!-- Changement : Liste dynamique des contacts via ui:repeat --><h:form id="contactsForm">
-            <div class="contacts">
-                <ui:repeat value="#{chatBean.conversationSummaries}" var="summary">
-                    <h:commandLink styleClass="contact" style="text-decoration: none; display: block;">
-                        <f:setPropertyActionListener target="#{chatBean.emailDestinataire}" value="#{summary.otherEmail}" />
-                        <f:ajax event="action"
-                                listener="#{chatBean.ouvrirConversation}"
-                                render="chatHeader chatBody chatFooter"
-                                execute="@this"
-                        />
-                        <div class="contact-info">
-                            <p class="name">#{summary.otherNom}</p>
-                            <p class="last-msg">#{summary.lastMsg}</p>
+            <h:form id="contactForm">
+                <ui:repeat value="#{chatBean.conversationSummaries}" var="contact">
+                    <h:commandLink action="#{chatBean.ouvrirConversationAvec(contact.otherEmail)}" styleClass="contact-item">
+                        <f:ajax render="chatPanel" execute="@this"/>
+                        <div class="contact-name">#{contact.otherNom}</div>
+                        <div class="contact-lastmsg">
+                            <i class="fa fa-comment-dots"></i>
+                            #{contact.lastMsg}
                         </div>
                     </h:commandLink>
+
                 </ui:repeat>
-            </div>
-        </h:form>
 
-            <div class="logout-section">
-                <h:form>
-                    <h:commandButton value="Déconnexion" action="#{authBean.logout}" styleClass="logout-btn" />
-                </h:form>
-            </div>
+                <h:outputText value="Aucune conversation pour le moment"
+                              rendered="#{empty chatBean.conversationSummaries}"
+                              style="color:#777;text-align:center;display:block;margin-top:10px;" />
+            </h:form>
 
-        </aside>
+            <!-- ✅ Barre de recherche -->
+            <!-- === Formulaire de recherche corrigé === -->
+            <h:form id="searchForm" style="margin-top:20px;">
+                <h:inputText value="#{chatBean.query}"
+                             id="searchInput"
+                             styleClass="search-input"
+                             placeholder="Rechercher un étudiant...">
+                    <!-- f:ajax se charge de déclencher la méthode serveur -->
+                    <f:ajax event="keyup"
+                            listener="#{chatBean.searchEtudiants}"
+                            render="resultsPanel" />
+                </h:inputText>
 
-        <!-- ===== ZONE CENTRALE ===== -->
-        <main class="chat" id="chatMain">  <!-- Ajout id pour naming container -->
-            <!-- Changement : rendered conditionnel + contenu dynamique -->
-            <div class="chat-header" id="chatHeader" rendered="#{chatBean.conversation != null}">
-                <h:outputText value="#{chatBean.destinataire.nom}" id="chatName" />
-            </div>
+                <h:panelGroup id="resultsPanel" layout="block" styleClass="search-results">
+                    <ui:repeat value="#{chatBean.resultatsRecherche}" var="etudiant">
+                        <h:commandLink action="#{chatBean.ouvrirConversationAvec(etudiant.email)}" styleClass="result-item">
+                            <strong>#{etudiant.nom}</strong> - #{etudiant.email}
+                        </h:commandLink>
+                    </ui:repeat>
 
-            <div class="chat-body" id="chatBody">
-                <!-- Changement : ui:repeat pour messages, conditionnel pour empty -->
-                <ui:repeat value="#{chatBean.historique}" var="msg" rendered="#{chatBean.conversation != null}">
-                    <div class="message #{msg.expediteur.email eq authController.etudiantConnecte.email ? 'sent' : 'received'}">
-                        <span>#{msg.contenu}</span>
-                        <small style="display: block; font-size: 0.8em; color: gray;">#{msg.date_envoi}
-                        </small>  <!-- Assumant un champ timestamp -->
+                    <h:outputText value="Aucun résultat"
+                                  rendered="#{empty chatBean.resultatsRecherche and not empty chatBean.query}"
+                                  style="display:block;padding:10px;color:#888;text-align:center;" />
+                </h:panelGroup>
+            </h:form>
+
+
+            <!-- ✅ Déconnexion -->
+            <h:form>
+                <h:commandButton value="Déconnexion" action="#{authBean.logout}" styleClass="logout-btn" />
+            </h:form>
+        </div>
+
+        <!-- ✅ Zone principale : conversation -->
+        <div class="chat-main">
+            <h:panelGroup rendered="#{not empty chatBean.conversation}" layout="block" id="chatPanel">
+                <div class="chat-header">
+                    <h3>#{chatBean.destinataire.nom}</h3>
+                    <span class="email">#{chatBean.destinataire.email}</span>
+                </div>
+
+                <!-- Historique des messages -->
+                <div class="chat-history" id="chatHistory">
+                    <ui:repeat value="#{chatBean.historique}" var="msg">
+                        <div class="#{msg.expediteur.id eq chatBean.authController.etudiantConnecte.id ? 'msg-out' : 'msg-in'}">
+                            <p>#{msg.contenu}</p>
+                            <span class="msg-time">#{msg.dateEnvoi}</span>
+                        </div>
+                    </ui:repeat>
+                </div>
+
+                <!-- Zone d'envoi -->
+                <h:form id="sendForm">
+                    <div class="chat-input">
+                        <h:inputText value="#{chatBean.nouveauMessage}" styleClass="input-message"
+                                     placeholder="Écrire un message..."
+                                     onkeydown="if(event.key==='Enter'){jsf.ajax.request(this,event,{execute:'@form',render:'chatPanel'}); return false;}" />
+                        <h:commandButton value="Envoyer" action="#{chatBean.envoyerMessage}" styleClass="send-btn">
+                            <f:ajax execute="@form" render="chatPanel" />
+                        </h:commandButton>
                     </div>
-                </ui:repeat>
-                <p class="empty" rendered="#{chatBean.conversation == null}">Sélectionnez un contact pour démarrer une conversation</p>
-            </div>
-
-            <!-- Changement : Formulaire JSF pour envoi, rendered conditionnel -->
-            <div class="chat-footer" id="chatFooter" rendered="#{chatBean.conversation != null}">
-                <button class="add-btn" type="button">+</button>
-                <h:form id="messageForm">
-                    <h:inputTextarea id="messageInput" value="#{chatBean.nouveauMessage}" placeholder="Écrire un message..." styleClass="message-input" />
-                    <h:commandButton styleClass="send-btn" type="submit">
-                        <f:ajax event="action" listener="#{chatBean.envoyerMessage}" render="chatBody" execute="messageInput" onevent="scrollToBottom" />
-                        <i class="fas fa-paper-plane"></i>  <!-- Icône au lieu de texte -->
-                    </h:commandButton>
                 </h:form>
-            </div>
-        </main>
+            </h:panelGroup>
 
-        <!-- ===== SIDEBAR DROITE ===== (inchangée) -->
-        <aside class="sidebar right">
-            <div class="search-section">
-                <div class="search-wrapper">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="search-input" placeholder="Rechercher..." />
-                    <div class="dropdown">
-                        <ul>
-                            <li>Historique 1</li>
-                            <li>Historique 2</li>
-                            <li>Historique 3</li>
-                        </ul>
-                    </div>
+            <!-- Message par défaut -->
+            <h:panelGroup rendered="#{empty chatBean.conversation}">
+                <div class="no-chat">
+                    <i class="fa fa-comments"></i>
+                    <p>Sélectionnez un contact ou recherchez un étudiant pour commencer à discuter.</p>
                 </div>
-            </div>
-
-            <div class="groups">
-                <div class="group">
-                    <p class="group-name">Groupe Dév Web</p>
-                </div>
-                <div class="group">
-                    <p class="group-name">Famille 👨‍👩‍👧‍👦</p>
-                </div>
-            </div>
-        </aside>
-    </div>
-
-    <!-- ===== POPUP CREATION GROUPE ===== (inchangée) -->
-    <div class="popup-overlay hidden" id="groupPopup">
-        <div class="popup">
-            <h2>Créer un groupe</h2>
-            <input type="text" placeholder="Nom du groupe" id="groupName" />
-            <button id="createGroup" type="button">Créer</button>
-            <button id="closePopup" type="button">Annuler</button>
+            </h:panelGroup>
         </div>
     </div>
-
-    <script type="text/javascript" src="../ressources/js/script.js"></script>
 </h:body>
 </html>

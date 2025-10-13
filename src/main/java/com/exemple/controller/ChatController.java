@@ -164,4 +164,9 @@ public class ChatController implements Serializable {
     public void setResultatsRecherche(List<Etudiant> resultatsRecherche) {
         this.resultatsRecherche = resultatsRecherche;
     }
+
+    public AuthController getAuthController() {
+        return authController;
+    }
+
 }
