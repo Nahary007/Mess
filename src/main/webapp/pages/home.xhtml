@@ -20,12 +20,14 @@
             <h:form id="contactForm">
                 <ui:repeat value="#{chatBean.conversationSummaries}" var="contact">
                     <h:commandLink action="#{chatBean.ouvrirConversationAvec(contact.otherEmail)}" styleClass="contact-item">
+                        <f:ajax render="chatPanel" execute="@this"/>
                         <div class="contact-name">#{contact.otherNom}</div>
                         <div class="contact-lastmsg">
                             <i class="fa fa-comment-dots"></i>
                             #{contact.lastMsg}
                         </div>
                     </h:commandLink>
+
                 </ui:repeat>
 
                 <h:outputText value="Aucune conversation pour le moment"
@@ -77,7 +79,7 @@
                 <!-- Historique des messages -->
                 <div class="chat-history" id="chatHistory">
                     <ui:repeat value="#{chatBean.historique}" var="msg">
-                        <div class="#{msg.sender.id eq chatBean.authController.etudiantConnecte.id ? 'msg-out' : 'msg-in'}">
+                        <div class="#{msg.expediteur.id eq chatBean.authController.etudiantConnecte.id ? 'msg-out' : 'msg-in'}">
                             <p>#{msg.contenu}</p>
                             <span class="msg-time">#{msg.dateEnvoi}</span>
                         </div>
