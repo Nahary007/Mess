@@ -8,26 +8,28 @@
     <title>Mess - Chat</title>
     <link rel="stylesheet" href="../ressources/css/chat.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="../ressources/js/app.js"></script>
 </h:head>
 
 <h:body>
     <div class="chat-container">
 
-        <!-- ✅ Liste des contacts -->
+        <!-- ✅ Barre latérale (contacts + recherche + logout) -->
         <div class="sidebar">
             <h2>Conversations</h2>
 
+            <!-- ✅ Liste des conversations -->
             <h:form id="contactForm">
                 <ui:repeat value="#{chatBean.conversationSummaries}" var="contact">
-                    <h:commandLink action="#{chatBean.ouvrirConversationAvec(contact.otherEmail)}" styleClass="contact-item">
-                        <f:ajax render="chatPanel" execute="@this"/>
+                    <h:commandLink action="#{chatBean.ouvrirConversationAvec(contact.otherEmail)}"
+                                   styleClass="contact-item">
+                        <f:ajax execute="@this" render="chatPanel" />
                         <div class="contact-name">#{contact.otherNom}</div>
                         <div class="contact-lastmsg">
                             <i class="fa fa-comment-dots"></i>
                             #{contact.lastMsg}
                         </div>
                     </h:commandLink>
-
                 </ui:repeat>
 
                 <h:outputText value="Aucune conversation pour le moment"
@@ -36,13 +38,11 @@
             </h:form>
 
             <!-- ✅ Barre de recherche -->
-            <!-- === Formulaire de recherche corrigé === -->
             <h:form id="searchForm" style="margin-top:20px;">
                 <h:inputText value="#{chatBean.query}"
                              id="searchInput"
                              styleClass="search-input"
                              placeholder="Rechercher un étudiant...">
-                    <!-- f:ajax se charge de déclencher la méthode serveur -->
                     <f:ajax event="keyup"
                             listener="#{chatBean.searchEtudiants}"
                             render="resultsPanel" />
@@ -50,7 +50,9 @@
 
                 <h:panelGroup id="resultsPanel" layout="block" styleClass="search-results">
                     <ui:repeat value="#{chatBean.resultatsRecherche}" var="etudiant">
-                        <h:commandLink action="#{chatBean.ouvrirConversationAvec(etudiant.email)}" styleClass="result-item">
+                        <h:commandLink action="#{chatBean.ouvrirConversationAvec(etudiant.email)}"
+                                       styleClass="result-item">
+                            <f:ajax execute="@this" render="chatPanel" />
                             <strong>#{etudiant.nom}</strong> - #{etudiant.email}
                         </h:commandLink>
                     </ui:repeat>
@@ -61,52 +63,54 @@
                 </h:panelGroup>
             </h:form>
 
-
             <!-- ✅ Déconnexion -->
             <h:form>
                 <h:commandButton value="Déconnexion" action="#{authBean.logout}" styleClass="logout-btn" />
             </h:form>
         </div>
 
-        <!-- ✅ Zone principale : conversation -->
+        <!-- ✅ Zone principale : chat -->
         <div class="chat-main">
-            <h:panelGroup rendered="#{not empty chatBean.conversation}" layout="block" id="chatPanel">
-                <div class="chat-header">
-                    <h3>#{chatBean.destinataire.nom}</h3>
-                    <span class="email">#{chatBean.destinataire.email}</span>
-                </div>
-
-                <!-- Historique des messages -->
-                <div class="chat-history" id="chatHistory">
-                    <ui:repeat value="#{chatBean.historique}" var="msg">
-                        <div class="#{msg.expediteur.id eq chatBean.authController.etudiantConnecte.id ? 'msg-out' : 'msg-in'}">
-                            <p>#{msg.contenu}</p>
-                            <span class="msg-time">#{msg.dateEnvoi}</span>
-                        </div>
-                    </ui:repeat>
-                </div>
-
-                <!-- Zone d'envoi -->
-                <h:form id="sendForm">
-                    <div class="chat-input">
-                        <h:inputText value="#{chatBean.nouveauMessage}" styleClass="input-message"
-                                     placeholder="Écrire un message..."
-                                     onkeydown="if(event.key==='Enter'){jsf.ajax.request(this,event,{execute:'@form',render:'chatPanel'}); return false;}" />
-                        <h:commandButton value="Envoyer" action="#{chatBean.envoyerMessage}" styleClass="send-btn">
-                            <f:ajax execute="@form" render="chatPanel" />
-                        </h:commandButton>
+            <h:panelGroup id="chatPanel" layout="block">
+                <!-- ✅ Si conversation ouverte -->
+                <h:panelGroup rendered="#{not empty chatBean.conversation}">
+                    <div class="chat-header">
+                        <h3>#{chatBean.destinataire.nom}</h3>
+                        <span class="email">#{chatBean.destinataire.email}</span>
                     </div>
-                </h:form>
-            </h:panelGroup>
 
-            <!-- Message par défaut -->
-            <h:panelGroup rendered="#{empty chatBean.conversation}">
-                <div class="no-chat">
-                    <i class="fa fa-comments"></i>
-                    <p>Sélectionnez un contact ou recherchez un étudiant pour commencer à discuter.</p>
-                </div>
+                    <div class="chat-history" id="chatHistory">
+                        <ui:repeat value="#{chatBean.historique}" var="msg">
+                            <div class="#{msg.expediteur.id eq chatBean.authController.etudiantConnecte.id ? 'msg-out' : 'msg-in'}">
+                                <p>#{msg.contenu}</p>
+                                <span class="msg-time">#{msg.dateEnvoi}</span>
+                            </div>
+                        </ui:repeat>
+                    </div>
+
+                    <!-- ✅ Envoi de message -->
+                    <h:form id="sendForm">
+                        <div class="chat-input">
+                            <h:inputText value="#{chatBean.nouveauMessage}" styleClass="input-message"
+                                         placeholder="Écrire un message..."
+                                         onkeydown="if(event.key==='Enter'){jsf.ajax.request(this,event,{execute:'@form',render:'chatPanel'}); return false;}" />
+                            <h:commandButton value="Envoyer" action="#{chatBean.envoyerMessage}" styleClass="send-btn">
+                                <f:ajax execute="@form" render="chatPanel" />
+                            </h:commandButton>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+
+                <!-- ✅ Message par défaut si aucune conversation -->
+                <h:panelGroup rendered="#{empty chatBean.conversation}">
+                    <div class="no-chat">
+                        <i class="fa fa-comments"></i>
+                        <p>Sélectionnez un contact ou recherchez un étudiant pour commencer à discuter.</p>
+                    </div>
+                </h:panelGroup>
             </h:panelGroup>
         </div>
+
     </div>
 </h:body>
 </html>
