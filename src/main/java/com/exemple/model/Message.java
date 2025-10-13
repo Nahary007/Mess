@@ -42,8 +42,11 @@ public class Message {
         this.expediteur = expediteur;
     }
 
-    public LocalDateTime getDate_envoi() {
+    public LocalDateTime getDateEnvoi() {
         return date_envoi;
     }
 
+    public void setDateEnvoi(LocalDateTime date_envoi) {
+        this.date_envoi = date_envoi;
+    }
 }
