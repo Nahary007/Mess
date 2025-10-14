@@ -14,6 +14,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Named("groupeBean")
@@ -38,8 +39,8 @@ public class GroupController implements Serializable {
 
     public void chargerGroupes() {
         groupes = em.createQuery(
-                "SELECT c FROM Conversation c JOIN c.membres m WHERE m.id = :id AND c.type = 'GROUPE'",
-                Conversation.class)
+                        "SELECT c FROM Conversation c JOIN c.membres m WHERE m.id = :id AND c.type = 'GROUPE'",
+                        Conversation.class)
                 .setParameter("id", authController.getEtudiantConnecte().getId())
                 .getResultList()
         ;
@@ -47,8 +48,8 @@ public class GroupController implements Serializable {
 
     public void chargerInvitations() {
         invitationsRecues = em.createQuery(
-                "SELECT i FROM Invitation i WHERE i.destinataire.id = :id AND i.statut = 'EN_ATTENTE'",
-                Invitation.class)
+                        "SELECT i FROM Invitation i WHERE i.destinataire.id = :id AND i.statut = 'EN_ATTENTE'",
+                        Invitation.class)
                 .setParameter("id", authController.getEtudiantConnecte().getId())
                 .getResultList()
         ;
@@ -59,6 +60,8 @@ public class GroupController implements Serializable {
         Conversation c = new Conversation();
         c.setNom(nomGroupe);
         c.setType("GROUPE");
+        // MODIF: Ajout de la date de création (manquante)
+        c.setDate_creation(LocalDateTime.now());
 
         Etudiant createur = em.find(Etudiant.class, authController.getEtudiantConnecte().getId());
         c.setMembres(List.of(createur));
@@ -66,13 +69,13 @@ public class GroupController implements Serializable {
         em.persist(c);
 
         FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage("Groupe crée avec succès !"));
+                new FacesMessage("Groupe créé avec succès !"));
         nomGroupe = "";
         chargerGroupes();
     }
 
     @Transactional
-    public  void inviter(long etudiantId, Long conversationId) {
+    public void inviter(long etudiantId, Long conversationId) {
         Etudiant expediteur = em.find(Etudiant.class, authController.getEtudiantConnecte().getId());
         Etudiant destinataire = em.find(Etudiant.class, etudiantId);
         Conversation conv = em.find(Conversation.class, conversationId);
@@ -141,5 +144,4 @@ public class GroupController implements Serializable {
     public void setInvitationsRecues(List<Invitation> invitationsRecues) {
         this.invitationsRecues = invitationsRecues;
     }
-
 }

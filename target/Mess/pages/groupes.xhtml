@@ -1,34 +1,144 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
 <h:head>
-    <title>Groupes de discussion</title>
+    <title>Mess - Groupes</title>
+    <link rel="stylesheet" href="../ressources/css/groupes.css" />
 </h:head>
+
 <h:body>
-    <h2>Créer un nouveau groupe</h2>
-    <h:form>
-        <h:inputText value="#{groupeBean.nomGroupe}" placeholder="Nom du groupe"/>
-        <h:commandButton value="Créer" action="#{groupeBean.creerGroupe}" />
-    </h:form>
 
-    <h2>Mes groupes</h2>
-    <h:dataTable value="#{groupeBean.groupes}" var="g">
-        <h:column><f:facet name="header">Nom</f:facet>#{g.nom}</h:column>
-    </h:dataTable>
+    <div class="container">
+        <!-- Sidebar gauche : Groupes -->
+        <div class="sidebar-left">
+            <div class="header-left">
+                <h3>Mes Groupes</h3>
+                <button onclick="openPopup('popupCreateGroupe')">+ Créer</button>
+            </div>
 
-    <h2>Invitations reçues</h2>
-    <h:dataTable value="#{groupeBean.invitationsRecues}" var="inv">
-        <h:column>De : #{inv.expediteur.nom}</h:column>
-        <h:column>Groupe : #{inv.conversation.nom}</h:column>
-        <h:column>
+            <div class="group-list">
+                <ui:repeat value="#{groupeBean.groupes}" var="g">
+                    <div class="group-item"
+                         onclick="#{chatBean.ouvrirConversationGroupe(g.id)}">
+                        <h:outputText value="#{g.nom}" />
+                    </div>
+                </ui:repeat>
+            </div>
+        </div>
+
+        <!-- Zone centrale : Chat -->
+        <div class="chat-area">
+            <h:panelGroup rendered="#{not empty chatBean.conversation}">
+                <div class="chat-header">
+                    <span class="chat-title">#{chatBean.conversation.nom}</span>
+                    <button onclick="openPopup('popupInvite')">+</button>
+                </div>
+
+                <div class="chat-body" id="chatBody">
+                    <ui:repeat value="#{chatBean.historique}" var="m">
+                        <div class="message-item #{m.expediteur.id eq chatBean.authController.etudiantConnecte.id ? 'me' : 'other'}">
+                            <span class="sender">#{m.expediteur.nom} :</span>
+                            <span class="text">#{m.contenu}</span>
+                        </div>
+                    </ui:repeat>
+                </div>
+
+                <div class="chat-footer">
+                    <h:form style="display:flex;gap:10px;">
+                        <h:inputText value="#{chatBean.nouveauMessage}" style="flex:1;padding:8px;" />
+                        <h:commandButton value="Envoyer"
+                                         action="#{chatBean.envoyerMessageGroupe}"
+                                         styleClass="send-btn"/>
+                    </h:form>
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{empty chatBean.conversation}">
+                <div class="no-chat">Sélectionnez un groupe à gauche pour commencer.</div>
+            </h:panelGroup>
+        </div>
+
+        <!-- Sidebar droite : Invitations -->
+        <div class="sidebar-right">
+            <h3>Invitations</h3>
+            <ui:repeat value="#{groupeBean.invitationsRecues}" var="inv">
+                <div class="invitation-card">
+                    <div class="inv-info">
+                        <strong>#{inv.conversation.nom}</strong><br/>
+                        <small>Par #{inv.expediteur.nom}</small>
+                    </div>
+                    <div class="inv-actions">
+                        <h:form>
+                            <h:commandButton value="Accepter"
+                                             action="#{groupeBean.accepteerInvitation(inv.id)}"
+                                             styleClass="btn-accept"/>
+                            <h:commandButton value="Refuser"
+                                             action="#{groupeBean.refuserInvitation(inv.id)}"
+                                             styleClass="btn-refuse"/>
+                        </h:form>
+                    </div>
+                </div>
+            </ui:repeat>
+        </div>
+    </div>
+
+    <!-- Popup création de groupe -->
+    <div id="popupCreateGroupe" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closePopup('popupCreateGroupe')">×</span>
+            <h2>Créer un groupe</h2>
             <h:form>
-                <h:commandButton value="Accepter" action="#{groupeBean.accepterInvitation(inv.id)}" />
-                <h:commandButton value="Refuser" action="#{groupeBean.refuserInvitation(inv.id)}" />
+                <h:inputText value="#{groupeBean.nomGroupe}"
+                             required="true"
+                             placeholder="Nom du groupe" />
+                <br/><br/>
+                <h:commandButton value="Créer"
+                                 action="#{groupeBean.creerGroupe}"
+                                 styleClass="btn-create"/>
             </h:form>
-        </h:column>
-    </h:dataTable>
+        </div>
+    </div>
+
+    <!-- Popup invitation -->
+    <div id="popupInvite" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closePopup('popupInvite')">×</span>
+            <h2>Inviter dans #{chatBean.conversation.nom}</h2>
+            <h:form>
+                <h:inputText value="#{chatBean.query}"
+                             placeholder="Rechercher nom ou email"
+                             onkeyup="submit()" />
+                <h:commandButton value="Rechercher" action="#{chatBean.searchEtudiants}" />
+            </h:form>
+
+            <div class="result-list">
+                <ui:repeat value="#{chatBean.resultatsRecherche}" var="etu">
+                    <div class="result-item">
+                        <div>
+                            <strong>#{etu.nom}</strong><br/>
+                            <small>#{etu.email}</small>
+                        </div>
+                        <h:form>
+                            <h:commandButton value="Inviter"
+                                             action="#{groupeBean.inviter(etu.id, chatBean.conversation.id)}" />
+                        </h:form>
+                    </div>
+                </ui:repeat>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openPopup(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        function closePopup(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+    </script>
 
 </h:body>
 </html>
