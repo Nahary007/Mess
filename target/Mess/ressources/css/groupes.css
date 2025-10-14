@@ -1,0 +1,38 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+    background: #f7f7f7;
+}
+
+h2 {
+    color: #333;
+}
+
+h:form {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+table {
+    background: white;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table th, table td {
+    padding: 8px;
+    border: 1px solid #ccc;
+}
+
+.btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}

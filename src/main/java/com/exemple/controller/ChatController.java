@@ -8,12 +8,16 @@ import com.exemple.service.EtudiantService;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Named("chatBean")
 @SessionScoped
@@ -35,13 +39,13 @@ public class ChatController implements Serializable {
 
     private List<Message> historique;
 
-    // MODIF: Liste dynamique des conversations (référence, inchangée)
+    // Liste dynamique des conversations (référence, inchangée)
     private List<Conversation> conversations;
 
-    // MODIF: NOUVEAU - Liste des résumés pour affichage (wrapper)
+    // Liste des résumés pour affichage (wrapper)
     private List<ContactSummary> conversationSummaries = new ArrayList<>();
 
-    // MODIF: NOUVEAU - Classe wrapper interne pour les propriétés calculées
+    // Classe wrapper interne pour les propriétés calculées
     public static class ContactSummary {
         private String otherEmail;
         private String otherNom;
@@ -49,7 +53,7 @@ public class ChatController implements Serializable {
         private Conversation conversation;  // Référence à la conversation complète
 
         // Constructeur
-        public ContactSummary(String otherEmail, String otherNom,  String lastMsg, Conversation conv) {
+        public ContactSummary(String otherEmail, String otherNom, String lastMsg, Conversation conv) {
             this.otherEmail = otherEmail;
             this.otherNom = otherNom;
             this.lastMsg = lastMsg;
@@ -69,26 +73,35 @@ public class ChatController implements Serializable {
         loadConversations();  // Chargement initial
     }
 
-    // MODIF: Mise à jour pour créer les summaries
+    // Mise à jour pour gérer groupes et privés séparément
     private void loadConversations() {
         Etudiant user = authController.getEtudiantConnecte();
         if (user != null) {
             List<Conversation> convs = chatService.getUserConversations(user);  // Assumer cette méthode dans ChatService
             conversationSummaries.clear();
             for (Conversation conv : convs) {
-                // Calcul de l'autre membre (assumant 2 membres max pour chat 1:1)
-                Etudiant other = null;
-                for (Etudiant membre : conv.getMembres()) {
-                    if (!membre.getEmail().equals(user.getEmail())) {
-                        other = membre;
-                        break;
+                String otherEmail = "";
+                String otherNom = "";
+                String lastMsg = conv.getLastMsg();
+                if ("GROUPE".equals(conv.getType())) {
+                    // Pour les groupes : utiliser le nom du groupe
+                    otherNom = conv.getNom();
+                } else {
+                    // Pour les privés (1:1) : trouver l'autre membre unique
+                    List<Etudiant> others = conv.getMembres().stream()
+                            .filter(m -> !m.getEmail().equals(user.getEmail()))
+                            .collect(Collectors.toList());
+                    if (others.size() == 1) {
+                        Etudiant other = others.get(0);
+                        otherEmail = other.getEmail();
+                        otherNom = other.getNom();
+                    } else {
+                        // Ignorer si plus d'un autre membre (anomalie)
+                        continue;
                     }
                 }
-                if (other != null) {
-                    String otherEmail = other.getEmail();  // Assumant getEmail()
-                    String otherNom = other.getNom();      // Assumant getNom()
-                    String lastMsg = conv.getLastMsg();
-                    conversationSummaries.add(new ContactSummary(otherEmail, otherNom , lastMsg, conv));
+                if (!otherNom.isEmpty()) {  // Seulement ajouter si nom valide
+                    conversationSummaries.add(new ContactSummary(otherEmail, otherNom, lastMsg, conv));
                 }
             }
             conversations = convs;  // Garder pour référence interne
@@ -98,7 +111,7 @@ public class ChatController implements Serializable {
         }
     }
 
-    // MODIF: Rendue void (pour AJAX), supprime la redirection
+    // Rendue void (pour AJAX), supprime la redirection
     public void ouvrirConversation() {
         Etudiant expediteur = authController.getEtudiantConnecte();
         destinataire = etudiantService.findByEmail(emailDestinataire);
@@ -118,6 +131,28 @@ public class ChatController implements Serializable {
         ouvrirConversation();
     }
 
+    // MODIF: NOUVEAU - Méthode dédiée pour ouvrir une conversation de groupe par ID
+    public void ouvrirConversationGroupe(Long convId) {
+        conversation = chatService.getConversationById(convId);  // Assumer implémentée dans ChatService
+        if (conversation != null && "GROUPE".equals(conversation.getType()) && isMemberOfConversation(conversation)) {
+            historique = chatService.getMessages(conversation);
+            // Marquer comme lue si besoin (optionnel)
+            loadConversations();  // Recharger les résumés pour mettre à jour lastMsg
+        } else {
+            // Gérer erreur
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Accès refusé à cette conversation de groupe."));
+        }
+    }
+
+    // Vérifie si l'utilisateur est membre
+    private boolean isMemberOfConversation(Conversation conv) {
+        Etudiant user = authController.getEtudiantConnecte();
+        return conv.getMembres().stream()
+                .anyMatch(m -> m.getId().equals(user.getId()));
+    }
+
+    // Méthode existante pour chats privés (inchangée)
     public void envoyerMessage() {
         if (nouveauMessage == null || nouveauMessage.trim().isEmpty()) return;
 
@@ -125,6 +160,39 @@ public class ChatController implements Serializable {
         chatService.envoyerMessage(conversation, expediteur, nouveauMessage);
         historique = chatService.getMessages(conversation);
         nouveauMessage = "";
+        // Recharger les résumés pour mettre à jour le lastMsg
+        loadConversations();
+    }
+
+    // MODIF: NOUVEAU - Méthode dédiée pour envoyer un message dans un groupe
+    public void envoyerMessageGroupe() {
+        if (nouveauMessage == null || nouveauMessage.trim().isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Avertissement", "Le message ne peut pas être vide."));
+            return;
+        }
+
+        if (conversation == null || !"GROUPE".equals(conversation.getType())) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Cette action est réservée aux groupes de discussion."));
+            return;
+        }
+
+        Etudiant expediteur = authController.getEtudiantConnecte();
+        if (!isMemberOfConversation(conversation)) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Vous n'êtes pas membre de ce groupe."));
+            return;
+        }
+
+        chatService.envoyerMessage(conversation, expediteur, nouveauMessage);
+        historique = chatService.getMessages(conversation);
+        nouveauMessage = "";
+        loadConversations();  // Met à jour les résumés pour tous les membres (lastMsg partagé)
+
+        // Message de succès optionnel
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage("Message envoyé au groupe avec succès !"));
     }
 
     // Getters/setters (ajouts et inchangés)
@@ -140,7 +208,7 @@ public class ChatController implements Serializable {
 
     public Conversation getConversation() { return conversation; }
 
-    // MODIF: NOUVEAU - Getter pour les summaries (utilisé dans UI)
+    // Getter pour les summaries (utilisé dans UI)
     public List<ContactSummary> getConversationSummaries() { return conversationSummaries; }
 
     // Getter pour conversations (référence, inchangé)
@@ -168,5 +236,4 @@ public class ChatController implements Serializable {
     public AuthController getAuthController() {
         return authController;
     }
-
 }

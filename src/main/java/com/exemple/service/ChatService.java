@@ -65,4 +65,23 @@ public class ChatService {
                 .setParameter("user", user)
                 .getResultList();
     }
+
+    public Conversation getConversationById(Long id) {
+        if (id == null) {
+            return null;
+        }
+
+        try {
+            return em.createQuery("""
+            SELECT DISTINCT c FROM Conversation c
+            LEFT JOIN FETCH c.membres
+            WHERE c.id = :id
+            """, Conversation.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (Exception e) {
+            // Log l'erreur si vous avez un logger
+            return null;
+        }
+    }
 }
