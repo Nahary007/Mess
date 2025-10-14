@@ -16,32 +16,48 @@
         <!-- ✅ Barre latérale (contacts + recherche + logout) -->
         <div class="sidebar">
 
-            <!-- ✅ Barre de recherche -->
-            <h:form id="searchForm" style="margin-top:20px;">
-                <h:inputText value="#{chatBean.query}"
-                             id="searchInput"
-                             styleClass="search-input"
-                             placeholder="Rechercher un étudiant...">
-                    <f:ajax event="keyup"
-                            listener="#{chatBean.searchEtudiants}"
-                            render="resultsPanel" />
-                </h:inputText>
+            <!-- ✅ Barre de recherche (modifiée pour affichage fluide sur frappe) -->
+            <div class="search-section">
+                <div class="search-wrapper">
+                    <!-- Logo optionnel : adapte le src si nécessaire -->
+                    <div class="input-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <h:form id="searchForm">
+                            <h:inputText value="#{chatBean.query}"
+                                         id="searchInput"
+                                         styleClass="search-input"
+                                         placeholder="Rechercher un étudiant...">
+                                <f:ajax event="keyup"
+                                        listener="#{chatBean.searchEtudiants}"
+                                        render="resultsPanel" />
+                            </h:inputText>
 
-                <h:panelGroup id="resultsPanel" layout="block" styleClass="search-results">
-                    <ui:repeat value="#{chatBean.resultatsRecherche}" var="etudiant">
-                        <h:commandLink action="#{chatBean.ouvrirConversationAvec(etudiant.email)}"
-                                       styleClass="result-item">
-                            <f:ajax execute="@this" render="chatPanel" />
-                            <strong>#{etudiant.nom}</strong> - #{etudiant.email}
-                        </h:commandLink>
-                    </ui:repeat>
+                            <h:panelGroup id="resultsPanel"
+                                          layout="block"
+                                          styleClass="dropdown #{not empty chatBean.query ? 'show' : ''}">
+                                <ul>
+                                    <ui:repeat value="#{chatBean.resultatsRecherche}" var="etudiant">
+                                        <li>
+                                            <h:commandLink action="#{chatBean.ouvrirConversationAvec(etudiant.email)}"
+                                                           styleClass="result-item">
+                                                <f:ajax execute="@this" render="chatPanel" />
+                                                <strong>#{etudiant.nom}</strong> - #{etudiant.email}
+                                            </h:commandLink>
+                                        </li>
+                                    </ui:repeat>
+                                    <li class="no-result"
+                                        rendered="#{empty chatBean.resultatsRecherche}">
+                                        <h:outputText value="Aucun résultat"
+                                                      style="display:block;padding:10px;color:#888;text-align:center;" />
+                                    </li>
+                                </ul>
+                            </h:panelGroup>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
 
-                    <h:outputText value="Aucun résultat"
-                                  rendered="#{empty chatBean.resultatsRecherche and not empty chatBean.query}"
-                                  style="display:block;padding:10px;color:#888;text-align:center;" />
-                </h:panelGroup>
-            </h:form>
-
+            <!-- Le reste du code reste inchangé... -->
             <!-- ✅ Liste des conversations -->
             <h:form id="contactForm">
                 <ui:repeat value="#{chatBean.conversationSummaries}" var="contact">
@@ -67,7 +83,7 @@
             </h:form>
         </div>
 
-        <!-- ✅ Zone principale : chat -->
+        <!-- ✅ Zone principale : chat (inchangée) -->
         <div class="chat-main">
             <h:panelGroup id="chatPanel" layout="block">
                 <!-- ✅ Si conversation ouverte -->
