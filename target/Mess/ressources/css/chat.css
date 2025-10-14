@@ -239,7 +239,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-height: 0; /* ⚠️ nécessaire pour scroll correct dans flex layout */
 }
+
 
 .chat-history::-webkit-scrollbar {
   width: 0;
@@ -327,4 +329,10 @@ body {
   font-size: 3em;
   color: #bbb;
   margin-bottom: 10px;
+}
+
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }

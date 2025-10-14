@@ -85,8 +85,8 @@
 
         <!-- ✅ Zone principale : chat (inchangée) -->
         <div class="chat-main">
-            <h:panelGroup id="chatPanel" layout="block">
-                <!-- ✅ Si conversation ouverte -->
+            <h:panelGroup id="chatPanel" layout="block" styleClass="chat-panel">
+            <!-- ✅ Si conversation ouverte -->
                 <h:panelGroup rendered="#{not empty chatBean.conversation}">
                     <div class="chat-header">
                         <h3>#{chatBean.destinataire.nom}</h3>
