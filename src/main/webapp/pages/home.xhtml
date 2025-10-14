@@ -79,7 +79,7 @@
 
             <!-- ✅ Déconnexion -->
             <h:form styleClass="logout-form">
-                <h:commandButton value="Déconnexion" action="#{authBean.logout}" styleClass="logout-btn" />
+                <h:commandButton value="Déconnexion" action="#{authBean.logout}" styleClass="logout-btn btn-primary" />
             </h:form>
         </div>
 
@@ -116,12 +116,13 @@
                 </h:panelGroup>
 
                 <!-- ✅ Message par défaut si aucune conversation -->
-                <h:panelGroup rendered="#{empty chatBean.conversation}">
+                <h:panelGroup rendered="#{empty chatBean.conversation}" layout="block" style="height: 100%;">
                     <div class="no-chat">
                         <i class="fa fa-comments"></i>
                         <p>Sélectionnez un contact ou recherchez un étudiant pour commencer à discuter.</p>
                     </div>
                 </h:panelGroup>
+
             </h:panelGroup>
         </div>
 
