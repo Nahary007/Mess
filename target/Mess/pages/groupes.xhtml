@@ -102,19 +102,28 @@
         </div>
     </div>
 
-    <!-- Popup invitation -->
+    <!-- ✅ Popup invitation corrigé -->
     <div id="popupInvite" class="popup">
         <div class="popup-content">
             <span class="close" onclick="closePopup('popupInvite')">×</span>
             <h2>Inviter dans #{chatBean.conversation.nom}</h2>
-            <h:form>
-                <h:inputText value="#{chatBean.query}"
+
+            <!-- ✅ Formulaire de recherche d'étudiant -->
+            <h:form id="inviteSearchForm">
+                <h:inputText id="inviteSearchInput"
+                             value="#{chatBean.query}"
                              placeholder="Rechercher nom ou email"
-                             onkeyup="submit()" />
-                <h:commandButton value="Rechercher" action="#{chatBean.searchEtudiants}" />
+                             style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;">
+                    <!-- ✅ Ajax pour recherche en direct sans rechargement -->
+                    <f:ajax event="keyup"
+                            listener="#{chatBean.searchEtudiants}"
+                            render="inviteResults"
+                            execute="@this" />
+                </h:inputText>
             </h:form>
 
-            <div class="result-list">
+            <!-- ✅ Résultats de recherche -->
+            <h:panelGroup id="inviteResults" layout="block" styleClass="result-list">
                 <ui:repeat value="#{chatBean.resultatsRecherche}" var="etu">
                     <div class="result-item">
                         <div>
@@ -123,22 +132,50 @@
                         </div>
                         <h:form>
                             <h:commandButton value="Inviter"
-                                             action="#{groupeBean.inviter(etu.id, chatBean.conversation.id)}" />
+                                             action="#{groupeBean.inviter(etu.id, chatBean.conversation.id)}"
+                                             styleClass="btn-invite" />
                         </h:form>
                     </div>
                 </ui:repeat>
-            </div>
+
+                <h:panelGroup rendered="#{empty chatBean.resultatsRecherche and not empty chatBean.query}">
+                    <div class="no-result">Aucun étudiant trouvé</div>
+                </h:panelGroup>
+            </h:panelGroup>
         </div>
     </div>
 
+
     <script>
         function openPopup(id) {
-            document.getElementById(id).style.display = 'flex';
+            const popup = document.getElementById(id);
+            if (!popup) return;
+            popup.style.display = 'flex';
+
+            // Focus automatique sur le champ de recherche
+            const input = popup.querySelector('input');
+            if (input) input.focus();
         }
+
         function closePopup(id) {
-            document.getElementById(id).style.display = 'none';
+            const popup = document.getElementById(id);
+            if (!popup) return;
+            popup.style.display = 'none';
+
+            // Appel AJAX JSF pour réinitialiser la recherche côté serveur
+            jsf.ajax.request(popup, null, {
+                execute: '@none',
+                render: 'inviteResults',
+                onevent: function (data) {
+                    if (data.status === 'complete') {
+                        const input = document.getElementById('inviteSearchForm:inviteSearchInput');
+                        if (input) input.value = '';
+                    }
+                }
+            });
         }
     </script>
+
 
 </h:body>
 </html>
