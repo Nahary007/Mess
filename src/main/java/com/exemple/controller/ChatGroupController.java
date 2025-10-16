@@ -38,8 +38,21 @@ public class ChatGroupController implements Serializable {
 
     @PostConstruct
     public void init() {
-        // Rien à charger par défaut, la conversation est sélectionnée après
+        String cidParam = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequestParameterMap().get("conversationId");
+
+        if (cidParam != null) {
+            try {
+                Long conversationId = Long.parseLong(cidParam);
+                ouvrirConversationGroupe(conversationId);
+            } catch (NumberFormatException e) {
+                // log or ignore
+            }
+        }
     }
+
+
 
     // ✅ Ouvrir un groupe
     public void ouvrirConversationGroupe(Long conversationId) {
@@ -60,8 +73,10 @@ public class ChatGroupController implements Serializable {
 
     // ✅ Envoyer un message dans un groupe
     @Transactional
-    public void envoyerMessageGroupe() {
-        if (conversation == null || nouveauMessage == null || nouveauMessage.trim().isEmpty()) return;
+    public String envoyerMessageGroupe() {
+        if (conversation == null || nouveauMessage == null || nouveauMessage.trim().isEmpty()) {
+            return null;
+        }
 
         Message msg = new Message();
         msg.setConversation(conversation);
@@ -72,8 +87,11 @@ public class ChatGroupController implements Serializable {
         em.persist(msg);
 
         nouveauMessage = "";
-        chargerHistorique(); // Rafraîchit le chat
+
+        return "groupes.xhtml?faces-redirect=true&conversationId=" + conversation.getId();
+
     }
+
 
     // ✅ Recherche d’étudiants pour l’invitation
     public void searchEtudiants() {
@@ -111,4 +129,9 @@ public class ChatGroupController implements Serializable {
 
     public List<Etudiant> getResultatsRecherche() { return resultatsRecherche; }
     public void setResultatsRecherche(List<Etudiant> resultatsRecherche) { this.resultatsRecherche = resultatsRecherche; }
+
+    public AuthController getAuthController() {
+        return authController;
+    }
+
 }
