@@ -8,7 +8,9 @@
     <title>Mess - Groupes</title>
     <link rel="stylesheet" href="../ressources/css/groupes.css" />
 </h:head>
-
+<f:metadata>
+    <f:viewAction action="#{groupeBean.refresh}" />
+</f:metadata>
 <h:body>
 
     <div class="container">
@@ -85,6 +87,9 @@
                     </div>
                 </div>
             </ui:repeat>
+            <h:panelGroup rendered="#{empty groupeBean.invitationsRecues}">
+                <div class="no-invitations">Aucune invitation en attente.</div>
+            </h:panelGroup>
         </div>
     </div>
 
