@@ -49,4 +49,12 @@ public class Message {
     public void setDateEnvoi(LocalDateTime date_envoi) {
         this.date_envoi = date_envoi;
     }
+
+    public void setConversation(Conversation conversation) {
+        this.conversation = conversation;
+    }
+
+    public void setContenu(String contenu) {
+        this.contenu = contenu;
+    }
 }

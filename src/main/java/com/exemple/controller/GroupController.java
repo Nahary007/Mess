@@ -37,6 +37,11 @@ public class GroupController implements Serializable {
         chargerInvitations();
     }
 
+    public void refresh() {
+        chargerGroupes();
+        chargerInvitations();
+    }
+
     public void chargerGroupes() {
         groupes = em.createQuery(
                         "SELECT c FROM Conversation c JOIN c.membres m WHERE m.id = :id AND c.type = 'GROUPE'",
