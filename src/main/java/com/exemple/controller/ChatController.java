@@ -73,32 +73,33 @@ public class ChatController implements Serializable {
         loadConversations();  // Chargement initial
     }
 
-    // Mise à jour pour gérer groupes et privés séparément
+    // Mise à jour pour gérer groupes et privés séparément (MODIFIÉ : filtre pour n'afficher que les privés)
     private void loadConversations() {
         Etudiant user = authController.getEtudiantConnecte();
         if (user != null) {
             List<Conversation> convs = chatService.getUserConversations(user);  // Assumer cette méthode dans ChatService
             conversationSummaries.clear();
             for (Conversation conv : convs) {
+                // MODIF : Ignorer les conversations de groupe pour n'afficher que les discussions privées (1:1)
+                if ("GROUPE".equals(conv.getType())) {
+                    continue;
+                }
+
                 String otherEmail = "";
                 String otherNom = "";
                 String lastMsg = conv.getLastMsg();
-                if ("GROUPE".equals(conv.getType())) {
-                    // Pour les groupes : utiliser le nom du groupe
-                    otherNom = conv.getNom();
+
+                // Pour les privés (1:1) : trouver l'autre membre unique
+                List<Etudiant> others = conv.getMembres().stream()
+                        .filter(m -> !m.getEmail().equals(user.getEmail()))
+                        .collect(Collectors.toList());
+                if (others.size() == 1) {
+                    Etudiant other = others.get(0);
+                    otherEmail = other.getEmail();
+                    otherNom = other.getNom();
                 } else {
-                    // Pour les privés (1:1) : trouver l'autre membre unique
-                    List<Etudiant> others = conv.getMembres().stream()
-                            .filter(m -> !m.getEmail().equals(user.getEmail()))
-                            .collect(Collectors.toList());
-                    if (others.size() == 1) {
-                        Etudiant other = others.get(0);
-                        otherEmail = other.getEmail();
-                        otherNom = other.getNom();
-                    } else {
-                        // Ignorer si plus d'un autre membre (anomalie)
-                        continue;
-                    }
+                    // Ignorer si plus d'un autre membre (anomalie)
+                    continue;
                 }
                 if (!otherNom.isEmpty()) {  // Seulement ajouter si nom valide
                     conversationSummaries.add(new ContactSummary(otherEmail, otherNom, lastMsg, conv));
