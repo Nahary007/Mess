@@ -13,10 +13,10 @@
 <h:body>
     <div class="chat-container">
 
-        <!-- ✅ Barre latérale (contacts + recherche + logout) -->
+        <!--  Barre latérale (contacts + recherche + logout) -->
         <div class="sidebar">
 
-            <!-- ✅ Barre de recherche (modifiée pour affichage fluide sur frappe) -->
+            <!--  Barre de recherche (modifiée pour affichage fluide sur frappe) -->
             <div class="search-section">
                 <div class="search-wrapper">
                     <!-- Logo optionnel : adapte le src si nécessaire -->
@@ -58,7 +58,7 @@
             </div>
 
             <!-- Le reste du code reste inchangé... -->
-            <!-- ✅ Liste des conversations -->
+            <!--  Liste des conversations -->
             <h:form id="contactForm">
                 <ui:repeat value="#{chatBean.conversationSummaries}" var="contact">
                     <h:commandLink action="#{chatBean.ouvrirConversationAvec(contact.otherEmail)}"
@@ -77,16 +77,21 @@
                               style="color:#777;text-align:center;display:block;margin-top:10px;" />
             </h:form>
 
-            <!-- ✅ Déconnexion -->
+            <!--  Bouton Groupes -->
+            <h:form styleClass="group-form">
+                <h:commandButton value="Groupes" action="groupes" styleClass="home-btn btn-primary" />
+            </h:form>
+
+            <!--  Déconnexion -->
             <h:form styleClass="logout-form">
                 <h:commandButton value="Déconnexion" action="#{authBean.logout}" styleClass="logout-btn btn-primary" />
             </h:form>
         </div>
 
-        <!-- ✅ Zone principale : chat (inchangée) -->
+        <!--  Zone principale : chat (inchangée) -->
         <div class="chat-main">
             <h:panelGroup id="chatPanel" layout="block" styleClass="chat-panel">
-            <!-- ✅ Si conversation ouverte -->
+                <!--  Si conversation ouverte -->
                 <h:panelGroup rendered="#{not empty chatBean.conversation}">
                     <div class="chat-header">
                         <h3>#{chatBean.destinataire.nom}</h3>
@@ -102,7 +107,7 @@
                         </ui:repeat>
                     </div>
 
-                    <!-- ✅ Envoi de message -->
+                    <!--  Envoi de message -->
                     <h:form id="sendForm">
                         <div class="chat-input">
                             <h:inputText value="#{chatBean.nouveauMessage}" styleClass="input-message"
@@ -115,7 +120,7 @@
                     </h:form>
                 </h:panelGroup>
 
-                <!-- ✅ Message par défaut si aucune conversation -->
+                <!--  Message par défaut si aucune conversation -->
                 <h:panelGroup rendered="#{empty chatBean.conversation}" layout="block" style="height: 100%;">
                     <div class="no-chat">
                         <i class="fa fa-comments"></i>

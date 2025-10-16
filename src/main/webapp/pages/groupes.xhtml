@@ -16,6 +16,7 @@
     <div class="container">
         <!-- Sidebar gauche : Groupes -->
         <div class="sidebar-left">
+
             <div class="header-left">
                 <h3>Mes Groupes</h3>
                 <button onclick="openPopup('popupCreateGroupe')">+ Créer</button>
@@ -24,14 +25,24 @@
             <div class="group-list">
                 <ui:repeat value="#{groupeBean.groupes}" var="g">
                     <div class="group-item">
-                    <h:form>
-                        <h:commandLink value="#{g.nom}"
-                                       action="#{chatGroupBean.ouvrirConversationGroupe(g.id)}"
-                        />
-                    </h:form>
+                        <h:form>
+                            <h:commandLink value="#{g.nom}"
+                                           action="#{chatGroupBean.ouvrirConversationGroupe(g.id)}"
+                            />
+                        </h:form>
                     </div>
                 </ui:repeat>
             </div>
+
+            <!--  Bouton Chat/Home -->
+            <h:form styleClass="home-form">
+                <h:commandButton value="Chat" action="home" styleClass="home-btn btn-primary" />
+            </h:form>
+
+            <!--  Déconnexion -->
+            <h:form styleClass="logout-form">
+                <h:commandButton value="Déconnexion" action="#{authBean.logout}" styleClass="logout-btn btn-primary" />
+            </h:form>
         </div>
 
         <!-- Zone centrale : Chat -->
@@ -51,14 +62,16 @@
                     </ui:repeat>
                 </div>
 
-                <div class="chat-footer">
-                    <h:form style="display:flex;gap:10px;">
-                        <h:inputText value="#{chatGroupBean.nouveauMessage}" style="flex:1;padding:8px;" />
-                        <h:commandButton value="Envoyer"
-                                         action="#{chatGroupBean.envoyerMessageGroupe}"
-                                         styleClass="send-btn"/>
-                    </h:form>
-                </div>
+
+                <h:form styleClass="chat-footer">
+                    <h:inputText value="#{chatGroupBean.nouveauMessage}"
+                                 styleClass="chat-message"
+                                 placeholder="Écrivez un message..." />
+                    <h:commandButton value="Envoyer"
+                                     action="#{chatGroupBean.envoyerMessageGroupe}"
+                                     styleClass="send-btn" />
+                </h:form>
+
             </h:panelGroup>
 
             <h:panelGroup rendered="#{empty chatGroupBean.conversation}">
@@ -110,19 +123,19 @@
         </div>
     </div>
 
-    <!-- ✅ Popup invitation corrigé -->
+    <!--  Popup invitation corrigé -->
     <div id="popupInvite" class="popup">
         <div class="popup-content">
             <span class="close" onclick="closePopup('popupInvite')">×</span>
             <h2>Inviter dans #{chatGroupBean.conversation.nom}</h2>
 
-            <!-- ✅ Formulaire de recherche d'étudiant -->
+            <!--  Formulaire de recherche d'étudiant -->
             <h:form id="inviteSearchForm">
                 <h:inputText id="inviteSearchInput"
                              value="#{chatGroupBean.query}"
                              placeholder="Rechercher nom ou email"
                              style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;">
-                    <!-- ✅ Ajax pour recherche en direct sans rechargement -->
+                    <!--  Ajax pour recherche en direct sans rechargement -->
                     <f:ajax event="keyup"
                             listener="#{chatGroupBean.searchEtudiants}"
                             render="inviteResults"
@@ -130,7 +143,7 @@
                 </h:inputText>
             </h:form>
 
-            <!-- ✅ Résultats de recherche -->
+            <!--  Résultats de recherche -->
             <h:panelGroup id="inviteResults" layout="block" styleClass="result-list">
                 <ui:repeat value="#{chatGroupBean.resultatsRecherche}" var="etu">
                     <div class="result-item">

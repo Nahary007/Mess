@@ -54,13 +54,13 @@ public class ChatGroupController implements Serializable {
 
 
 
-    // ✅ Ouvrir un groupe
+    //  Ouvrir un groupe
     public void ouvrirConversationGroupe(Long conversationId) {
         conversation = em.find(Conversation.class, conversationId);
         chargerHistorique();
     }
 
-    // ✅ Charger les messages du groupe
+    //  Charger les messages du groupe
     public void chargerHistorique() {
         if (conversation == null) return;
 
@@ -71,7 +71,7 @@ public class ChatGroupController implements Serializable {
                 .getResultList();
     }
 
-    // ✅ Envoyer un message dans un groupe
+    //  Envoyer un message dans un groupe
     @Transactional
     public String envoyerMessageGroupe() {
         if (conversation == null || nouveauMessage == null || nouveauMessage.trim().isEmpty()) {
@@ -93,7 +93,7 @@ public class ChatGroupController implements Serializable {
     }
 
 
-    // ✅ Recherche d’étudiants pour l’invitation
+    //  Recherche d’étudiants pour l’invitation
     public void searchEtudiants() {
         if (query == null || query.trim().isEmpty()) {
             resultatsRecherche.clear();
@@ -107,7 +107,7 @@ public class ChatGroupController implements Serializable {
                 .getResultList();
     }
 
-    // ✅ Réinitialisation du champ de recherche
+    //  Réinitialisation du champ de recherche
     public void clearSearch() {
         query = "";
         resultatsRecherche.clear();
