@@ -56,11 +56,10 @@ public class GroupController implements Serializable {
     }
 
     @Transactional
-    public void creerGroupe() {
+    public String creerGroupe() {
         Conversation c = new Conversation();
         c.setNom(nomGroupe);
         c.setType("GROUPE");
-        // MODIF: Ajout de la date de création (manquante)
         c.setDate_creation(LocalDateTime.now());
 
         Etudiant createur = em.find(Etudiant.class, authController.getEtudiantConnecte().getId());
@@ -72,10 +71,12 @@ public class GroupController implements Serializable {
                 new FacesMessage("Groupe créé avec succès !"));
         nomGroupe = "";
         chargerGroupes();
+
+        return "groupes?faces-redirect=true";
     }
 
     @Transactional
-    public void inviter(long etudiantId, Long conversationId) {
+    public String inviter(long etudiantId, Long conversationId) {
         Etudiant expediteur = em.find(Etudiant.class, authController.getEtudiantConnecte().getId());
         Etudiant destinataire = em.find(Etudiant.class, etudiantId);
         Conversation conv = em.find(Conversation.class, conversationId);
@@ -90,10 +91,13 @@ public class GroupController implements Serializable {
 
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage("Invitation envoyée"));
+        chargerInvitations();
+
+        return "groupes?faces-redirect=true";
     }
 
     @Transactional
-    public void accepteerInvitation(Long invitationId) {
+    public String accepteerInvitation(Long invitationId) {
         Invitation inv = em.find(Invitation.class, invitationId);
         inv.setStatut("ACCEPTEE");
 
@@ -108,10 +112,12 @@ public class GroupController implements Serializable {
                 new FacesMessage("Invitation acceptée !"));
         chargerInvitations();
         chargerGroupes();
+
+        return "groupes?faces-redirect=true";
     }
 
     @Transactional
-    public void refuserInvitation(Long invitationId) {
+    public String refuserInvitation(Long invitationId) {
         Invitation inv = em.find(Invitation.class, invitationId);
         inv.setStatut("REFUSEE");
         em.merge(inv);
@@ -119,6 +125,8 @@ public class GroupController implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage("Invitation refusée."));
         chargerInvitations();
+
+        return "groupes?faces-redirect=true";
     }
 
     public String getNomGroupe() {
