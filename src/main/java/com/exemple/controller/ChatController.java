@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Named("chatBean")
-@ViewScoped
+@SessionScoped
 public class ChatController implements Serializable {
 
     @EJB

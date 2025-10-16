@@ -1,3 +1,4 @@
+com\exemple\controller\ChatGroupController.class
 com\exemple\model\Conversation.class
 com\exemple\service\ChatService.class
 com\exemple\controller\AuthController.class
